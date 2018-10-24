@@ -1,0 +1,12 @@
+frankripple@frankserver:/etc/mysql$ sudo cat debian.cnf
+# Automatically generated for Debian scripts. DO NOT TOUCH!
+[client]
+host     = localhost
+user     = debian-sys-maint
+password = ARWluoO3DRPrnB6P
+socket   = /var/run/mysqld/mysqld.sock
+[mysql_upgrade]
+host     = localhost
+user     = debian-sys-maint
+password = ARWluoO3DRPrnB6P
+socket   = /var/run/mysqld/mysqld.sock
