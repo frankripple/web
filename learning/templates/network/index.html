@@ -1,0 +1,18 @@
+{% if interface_list %}
+    <table>
+		<tr>
+        <th>ID</th>
+		<th>Device</th>
+		<th>interface_name</th>
+		</tr>
+    {% for interface in interface_list %}
+		<tr>
+        <td>{{interface.id}}</td>
+		<td>{{interface.iDevice.hostname}}</td>
+		<td>{{interface.iName}}</td>
+		</tr>
+    {% endfor %}
+    </table>
+{% else %}
+    <p>No polls are available.</p>
+{% endif %}

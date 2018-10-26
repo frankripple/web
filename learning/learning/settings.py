@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mykeywords.apps.MykeywordsConfig',
+    'network.apps.NetworkConfig',
 ]
 
 MIDDLEWARE = [
