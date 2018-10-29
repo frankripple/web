@@ -37,8 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'mykeywords.apps.MykeywordsConfig',
-    'network.apps.NetworkConfig',
+    'mykeywords.apps.MykeywordsConfig',  #Cuijunshi Note 2018-10-29 Install the APP in Setting of Global
+    'network.apps.NetworkConfig',        #Cuijunshi Note 2018-10-29 Install the APP in Setting of Global
 ]
 
 MIDDLEWARE = [

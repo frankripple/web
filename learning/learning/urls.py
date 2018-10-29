@@ -19,8 +19,8 @@ from . import view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('mykeywords.urls')),
-    path('network/', include('network.urls')),
+    path('', include('mykeywords.urls')),       #Cuijunshi Note 2018-10-29 include the URLS in every apps in the root url
+    path('network/', include('network.urls')),  #Cuijunshi Note 2018-10-29 include the URLS in every apps in the root url
 ]
 
 

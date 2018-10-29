@@ -19,7 +19,7 @@ from . import views
 
 urlpatterns = [
     path('import_all', views.insert_all,name='import'),
-    path('', views.IndexView.as_view(), name='index'),
+    path('', views.IndexView.as_view(), name='index'),  #Cuijunshi Note 2018-10-29 define default views for network function
 ]
 
 

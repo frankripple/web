@@ -3,10 +3,13 @@ from django.views import generic
 
 import os,re
 from . import models
-# Create your views here.
+#  #Cuijunshi Note 2018-10-29 2 views
 
 
 class IndexView(generic.ListView):
+    '''
+    Cuijunshi Note 2018-10-29 a show_all views for test generic view
+    '''
     template_name = 'network/index.html'
     context_object_name = 'interface_list'
 
@@ -39,6 +42,9 @@ def findrun(filename):
 r = findaddfilesbyCondition('D:\\Python\\Tools\\log',findrun)
 
 def insert_all(request):
+    '''
+    Cuijunshi Note 2018-10-29 a modle save API test
+    '''
     for p in r:
         f = open(p,'r')
         lines  = f.readlines()
@@ -61,7 +67,7 @@ def insert_all(request):
                 else:
                     interface = models.Interface()
                 interface.iName = t.groups()[0]
-                interface.iDevice = device
+                interface.iDevice = device   #Cuijunshi Note 2018-10-29 add foreign key
 
             if interface is not None:
                 t = re.search('^\s+description (.*)\n',l)
@@ -88,7 +94,7 @@ def insert_all(request):
 
     context ={}
     context['header'] = '第一个模版！'
-    return render(request,'index.html',context)
+    return render(request,'index.html',context)    #Cuijunshi Note 2018-10-29 Template dir is /templates/network/*
 
 
 
