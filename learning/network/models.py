@@ -15,3 +15,23 @@ class Interface(models.Model):
     iDevice = models.ForeignKey(Device,on_delete=models.CASCADE,default ='')   #Cuijunshi Note 2018-10-29 test a function of a foreignKey
     iUsed = models.BooleanField(null=True)
 
+
+# Cuijunshi Note 2018-10-30 test a function for model forms begin
+class Person(models.Model):
+    name = models.CharField(max_length=16)
+
+    def __str__(self):
+        return self.name
+
+class Label(models.Model):
+    name = models.CharField(max_length=64)
+    frequncy = models.IntegerField()
+    person = models.ForeignKey(Person,on_delete=models.CASCADE,default ='')
+
+class Activity(models.Model):
+    description = models.CharField(max_length=255,null=True)
+    person = models.ForeignKey(Person,on_delete=models.CASCADE,default ='')
+    label = models.ForeignKey(Label,on_delete=models.CASCADE,default ='')
+
+# Cuijunshi Note 2018-10-30 test a function for model forms end
+

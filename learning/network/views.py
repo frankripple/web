@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.views import generic
+from django.forms import ModelForm
 
 import os,re
 from . import models
@@ -17,6 +18,30 @@ class IndexView(generic.ListView):
         return models.Interface.objects.all()
 
 
+class ArticleForm(ModelForm):
+    class Meta:
+        model = models.Activity
+        fields = ['person', 'label', 'description']
+
+def add_activity(request):
+
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = NameForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            # ...
+            # redirect to a new URL:
+            return HttpResponseRedirect('/thanks/')
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = ArticleForm()
+    return render(request, 'add_activity.html', {'form': form})  # Need to solve the problem that can not find template
+
+# build in function for insert_all
 def findaddfilesbyCondition(rootdir,Condition):
     '''
     rootdir is the root path for the file search.
@@ -31,6 +56,7 @@ def findaddfilesbyCondition(rootdir,Condition):
                 result.append(file_path)
     return result
 
+# build in function for insert_all
 def findrun(filename):
     if re.search(r'show run.txt',filename):
         return True
@@ -39,12 +65,11 @@ def findrun(filename):
     else:
         return False
 
-r = findaddfilesbyCondition('D:\\Python\\Tools\\log',findrun)
-
 def insert_all(request):
     '''
     Cuijunshi Note 2018-10-29 a modle save API test
     '''
+    r = findaddfilesbyCondition('D:\\Python\\Tools\\log',findrun)
     for p in r:
         f = open(p,'r')
         lines  = f.readlines()
