@@ -39,7 +39,7 @@ def add_activity(request):
     # if a GET (or any other method) we'll create a blank form
     else:
         form = ArticleForm()
-    return render(request, 'add_activity.html', {'form': form})  # Need to solve the problem that can not find template
+    return render(request, 'network/add_activity.html', {'form': form})  # Need to solve the problem that can not find template
 
 # build in function for insert_all
 def findaddfilesbyCondition(rootdir,Condition):
