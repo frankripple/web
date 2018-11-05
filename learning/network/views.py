@@ -17,6 +17,17 @@ class IndexView(generic.ListView):
     def get_queryset(self):
         return models.Interface.objects.all()
 
+class DeviceIndexView(generic.ListView):
+    template_name = 'network/device_list.html'
+    context_object_name = 'device_list'
+
+    def get_queryset(self):
+        return models.Device.objects.all()
+
+class DeviceDetailView(generic.DetailView):
+    model = models.Device
+    template_name = 'network/device_detail.html'
+    fields = ['id','hostname','Mgt_IP']
 
 class ArticleForm(ModelForm):
     class Meta:
@@ -121,5 +132,11 @@ def insert_all(request):
     context['header'] = '第一个模版！'
     return render(request,'index.html',context)    #Cuijunshi Note 2018-10-29 Template dir is /templates/network/*
 
-
+def import_device(request):
+    root_path = 'D:\\Python\\Tools\\log'
+    if os.path.isdir(root_path):
+        for device_folder in os.listdir(root_path):
+            if os.path.isdir(device_folder):
+                for file_name in os.listdir(os.path.join(root_path,device_folder)):
+                    print(file_name)
 

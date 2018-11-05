@@ -1,0 +1,27 @@
+<html lang="zh-CN">
+{% include 'top.html' with mytitle='index_of_device' %}
+{% if device_list %}
+<body>
+
+	<div class="container">
+    <table class="table table-bordered">
+		<tr>
+        <th>ID</th>
+		<th>Device</th>
+		<th>IP</th>
+		</tr>
+    {% for device in device_list %}
+		<tr>
+        <td>{{device.id}}</td>
+		<td><a href="{% url 'device_detail' device.id %}">{{device.hostname}}</a></td>   <!--Cuijunshi Note 2018-10-29 Template test for list and foreign key -->
+		<td>{{device.Mgt_IP}}</td>
+		</tr>
+    {% endfor %}
+	</table>
+</div>
+{% else %}
+    <p>No polls are available.</p>
+{% endif %}
+</body>
+{% include 'bottom.html' %}
+</html>

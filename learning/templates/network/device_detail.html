@@ -1,0 +1,25 @@
+<html lang="zh-CN">
+{% include 'top.html' with mytitle='index_of_device' %}
+<body>
+		<div class="page-header">
+				<h1>设备详情</h1>
+		</div>
+	<div class="container">
+    <table class="table table-bordered">
+		<tr>
+		<th>ID</th><td>{{device.id}}</td>
+	</tr>
+	<tr>
+		<th>Device</th><td>{{device.hostname}}</td>
+	</tr>
+	<tr>
+		<th>IP</th><td>{{device.Mgt_IP}}</td>
+	</tr>
+	<tr>
+			<th>peizhi</th><td>{{device.running_configure}}</td>
+		</tr>
+	</table>
+	</div>
+</body>
+{% include 'bottom.html' %}
+</html>

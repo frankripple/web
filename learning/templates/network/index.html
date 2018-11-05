@@ -1,11 +1,13 @@
+<html lang="zh-CN">
+{% include 'top.html' with mytitle='index_of_interface' %}
 {% if interface_list %}
     <table>
 		<tr>
         <th>ID</th>
-		<th>Device</th>
-		<th>interface_name</th>
+		<th>Device_name</th>
+		<th>Device_IP</th>
 		</tr>
-    {% for interface in interface_list %}
+	{% for interface in interface_list %}
 		<tr>
         <td>{{interface.id}}</td>
 		<td>{{interface.iDevice.hostname}}</td>   <!--Cuijunshi Note 2018-10-29 Template test for list and foreign key -->
@@ -16,3 +18,5 @@
 {% else %}
     <p>No polls are available.</p>
 {% endif %}
+{% include 'bottom.html' %}
+</html>
