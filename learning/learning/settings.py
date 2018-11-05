@@ -132,5 +132,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+    '/var/www/static/',
+]
 FILE_CHARSET = 'utf-8'
 DEFAULT_CHARSET = 'utf-8'
