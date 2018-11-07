@@ -7,7 +7,7 @@ class PersonAdmin(admin.ModelAdmin):
     list_display = ('id','name')
 
 class DeviceAdmin(admin.ModelAdmin):
-    list_display = ('hostname','Mgt_IP')
+    list_display = ('hostname','version','device_type','Mgt_IP')
 
 #admin.site.register(Person,PersonAdmin)
 
