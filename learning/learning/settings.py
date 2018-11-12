@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import pymysql
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -37,8 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'mykeywords.apps.MykeywordsConfig',  #Cuijunshi Note 2018-10-29 Install the APP in Setting of Global
-    'network.apps.NetworkConfig',        #Cuijunshi Note 2018-10-29 Install the APP in Setting of Global
+    'mykeywords.apps.MykeywordsConfig',
+    #Cuijunshi Note 2018-10-29 Install the APP in Setting of Global
+    'network.apps.NetworkConfig',
+    #Cuijunshi Note 2018-10-29 Install the APP in Setting of Global
 ]
 
 MIDDLEWARE = [
@@ -76,8 +79,8 @@ WSGI_APPLICATION = 'learning.wsgi.application'
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 # Add the following 2 lines when using pymysql for mysql connection
-import pymysql  
-pymysql.install_as_MySQLdb() 
+
+pymysql.install_as_MySQLdb()
 
 
 DATABASES = {
@@ -85,11 +88,11 @@ DATABASES = {
         #'ENGINE': 'django.db.backends.sqlite3',
         #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mykeyword', 
+        'NAME': 'mykeyword',
         'USER': 'mykeyword',
         'PASSWORD': '123456',
         'HOST': '192.168.106.129',
-        'PORT': '3306',      
+        'PORT': '3306',
     }
 }
 
@@ -138,3 +141,30 @@ STATICFILES_DIRS = [
 ]
 FILE_CHARSET = 'utf-8'
 DEFAULT_CHARSET = 'utf-8'
+
+
+LOGGING = {
+    'disable_existing_loggers': False,
+    'version': 1,
+    'handlers': {
+        'console': {
+            # logging handler that outputs log messages to terminal
+            'class': 'logging.StreamHandler',
+            'level': 'DEBUG', # message level to be written to console
+        },
+    },
+    'loggers': {
+        '': {
+            # this sets root level logger to log debug and higher level
+            # logs to console. All other loggers inherit settings from
+            # root level logger.
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False, # this tells logger to send logging message
+                                # to its parent (will send if set to True)
+        },
+        'django.db': {
+            # django also has database level logging
+        },
+    },
+}
