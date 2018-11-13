@@ -39,7 +39,7 @@ def add_activity(request):
     # if this is a POST request we need to process the form data
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
-        form = NameForm(request.POST)
+        form = ArticleForm(request.POST)
         # check whether it's valid:
         if form.is_valid():
             # process the data in form.cleaned_data as required
@@ -60,7 +60,7 @@ def findaddfilesbyCondition(rootdir,Condition):
     return value is the list of all the fullname of files.
     '''
     result = list()
-    for parent, dirnames, filenames in os.walk(rootdir,followlinks=True):
+    for parent, _, filenames in os.walk(rootdir,followlinks=True):
         for filename in filenames:
             file_path = os.path.join(parent, filename)
             if Condition(file_path):
@@ -93,7 +93,6 @@ def insert_all(request):
                 if t:
                     device = models.Device(hostname = t.groups()[0])
                     device.save()
-
 
             t = re.search('^interface (\S+)',l)
             if t:
@@ -132,11 +131,4 @@ def insert_all(request):
     context['header'] = '第一个模版！'
     return render(request,'index.html',context)    #Cuijunshi Note 2018-10-29 Template dir is /templates/network/*
 
-def import_device(request):
-    root_path = 'D:\\Python\\Tools\\log'
-    if os.path.isdir(root_path):
-        for device_folder in os.listdir(root_path):
-            if os.path.isdir(device_folder):
-                for file_name in os.listdir(os.path.join(root_path,device_folder)):
-                    print(file_name)
 
