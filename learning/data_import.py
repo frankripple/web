@@ -93,74 +93,6 @@ def findrun(filename):
         return True
     return False
 
-def import_device_interface_from_file(path):
-    '''
-        Main function for import device information from txt files to databases
-        Args:
-            Path is a folder which content some folders named by device IP and name.
-            In each folder, there are some txt files collected from devices.
-    '''
-    device_number = 0
-    try:
-        folders = os.listdir(path)
-    except OSError as _e:
-        print(_e)
-        raise _e
-
-    for folder in folders:
-        device = import_device_from_folder(os.path.join(path, folder))
-        if device:
-            device_number += 1
-            import_interfaces(device, get_cdp_information(os.path.join(path, folder)))
-    return device_number
-
-def import_device_from_folder(folder_name):
-    '''
-        Import information from folder named by IPADDRESS_HOSTNAME, Like 176.1.1.222_A-XXX-CCC-CS01
-        Args:
-            folder_name:
-        Returns:
-            Model device: model device from Django. If add failed, return None
-    '''
-    _ip = get_device_mngip(folder_name)
-    if _ip is None:
-        tools.LOGS.add_error('Can not find device IP in this folder %s' % folder_name)
-        return None
-
-    try:
-        _running_config = get_running_config(folder_name)
-    except NotADirectoryError as _e:
-        tools.LOGS.add_error(_e)
-        return None
-
-    if _running_config is None:
-        tools.LOGS.add_error('Can not find configuration file in this folder %s' % folder_name)
-        return None
-
-    _device_name = get_device_name(_running_config)
-    if _device_name is not None:
-        try:
-            _device, _ = Device.objects.get_or_create(hostname=_device_name)
-            _device.Mgt_IP = _ip
-            _device.running_configure = _running_config
-        except django.db.utils.OperationalError as _e:
-            tools.LOGS.add_error(str(_e))
-            return None
-    else:
-        tools.LOGS.add_error('Can not find hostname in this folder %s' % folder_name)
-        return None
-    _device.description = _device_name
-    _device.device_type, _device.version = get_device_type_version(folder_name)
-
-    try:
-        _device.save()
-        tools.LOGS.add_info('%s has been added' % _device_name)
-        return _device
-    except django.db.utils.OperationalError as _e:
-        tools.LOGS.add_error('Device %s Add error'% _device_name)
-        tools.LOGS.add_error(str(_e))
-        return None
-
 def get_cdp_information(path):
     '''
         Get cdp interface in a dict. Key is interface name and value is a tulpe
@@ -222,7 +154,7 @@ def import_interfaces(device, cdp_information=None):
             Number of interfaces which were added successfully
     '''
     _interface_name = re.compile(r'^interface (\S+)')
-    _interface_description = re.compile(r'^\s+description (.*)\n')
+    _interface_description = re.compile(r'description (.*)\s+')
     _interface_ip = re.compile(r'ip address (\d+\.\d+\.\d+\.\d+)')
     _interface_trunk_vlan = re.compile(r'switchport trunk allowed vlan (.*)')
     _interface_access_vlan = re.compile(r'switchport access vlan (\d+)')
@@ -263,11 +195,81 @@ def import_interfaces(device, cdp_information=None):
         get_information_from_cdp(interface.iName, cdp_information)
         interface.save()
 
+def import_device_from_folder(folder_name):
+    '''
+        Import information from folder named by IPADDRESS_HOSTNAME, Like 176.1.1.222_A-XXX-CCC-CS01
+        Args:
+            folder_name:
+        Returns:
+            Model device: model device from Django. If add failed, return None
+    '''
+    _ip = get_device_mngip(folder_name)
+    if _ip is None:
+        tools.LOGS.add_error('Can not find device IP in this folder %s' % folder_name)
+        return None
+
+    try:
+        _running_config = get_running_config(folder_name)
+    except NotADirectoryError as _e:
+        tools.LOGS.add_error(_e)
+        return None
+
+    if _running_config is None:
+        tools.LOGS.add_error('Can not find configuration file in this folder %s' % folder_name)
+        return None
+
+    _device_name = get_device_name(_running_config)
+    if _device_name is not None:
+        try:
+            _device, _ = Device.objects.get_or_create(hostname=_device_name)
+            _device.Mgt_IP = _ip
+            _device.running_configure = _running_config
+        except django.db.utils.OperationalError as _e:
+            tools.LOGS.add_error(str(_e))
+            return None
+    else:
+        tools.LOGS.add_error('Can not find hostname in this folder %s' % folder_name)
+        return None
+    _device.description = _device_name
+    _device.device_type, _device.version = get_device_type_version(folder_name)
+
+    try:
+        _device.save()
+        tools.LOGS.add_info('%s has been added' % _device_name)
+        return _device
+    except django.db.utils.OperationalError as _e:
+        tools.LOGS.add_error('Device %s Add error'% _device_name)
+        tools.LOGS.add_error(str(_e))
+        return None
+
+def import_device_interface_from_file(path):
+    '''
+        Main function for import device information from txt files to databases
+        Args:
+            Path is a folder which content some folders named by device IP and name.
+            In each folder, there are some txt files collected from devices.
+    '''
+    device_number = 0
+    try:
+        folders = os.listdir(path)
+    except OSError as _e:
+        print(_e)
+        raise _e
+
+    for folder in folders:
+        device = import_device_from_folder(os.path.join(path, folder))
+        if device:
+            device_number += 1
+            import_interfaces(device, get_cdp_information(os.path.join(path, folder)))
+            print('Device %s was updated or added successfully'% device.hostname)
+    return device_number
 
 
+#TODO add a function to read show cdp neighbor.txt
+#TODO add a function just to update cdp information
 
 if __name__ == "__main__":
-    LOG_ROOT = r'D:\Python\log\20181102220753\txt'
+    LOG_ROOT = r'D:\Python\log\result'
     DEVICE_NUMBER = import_device_interface_from_file(LOG_ROOT)
     print('%d devices were added or updated' % (DEVICE_NUMBER,))
 

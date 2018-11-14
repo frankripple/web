@@ -10,7 +10,7 @@ class DeviceAdmin(admin.ModelAdmin):
     list_display = ('hostname', 'version', 'device_type', 'Mgt_IP')
 
 class InterfaceAdmin(admin.ModelAdmin):
-    list_display = ('iDevice','iName','remote_device_name', 'remote_interface_name')
+    list_display = ('iDevice', 'iName', 'remote_device_name', 'remote_interface_name', 'description','iIP','iVlan')
     list_per_page = 40
 
 
