@@ -94,13 +94,13 @@ def export_interface_ip_to_csv(file_name):
 
 if __name__ == "__main__":
     LOG_ROOT = r'D:\Python\log\result'
-    
+    '''
     DEVICE_NUMBER = import_devices(LOG_ROOT)
     print('%d devices were added or updated' % (DEVICE_NUMBER,))
     print(LOGS.infos)
     for _error_log in LOGS.error_logs:
         print(_error_log)
     
-
+    '''
     print(export_interface_ip_to_csv('interface_ip.csv'))
     print(tools.LOGS.errors)
