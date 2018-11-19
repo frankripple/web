@@ -7,3 +7,4 @@
 learning/learning/__pycache__/settings.cpython-37.pyc
 *.csv
 *.xlsx
+*.txt

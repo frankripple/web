@@ -98,7 +98,10 @@ def get_cdp_information(path):
         Get cdp interface in a dict. Key is interface name and value is a tulpe
             {
                 'local_interface_name': ('peer_device_name', 'peer_interface_name')
+                if source is 'show cdp neighbor.txt', key is the number of the interface
                 '8/11': ('XXXXXXX_002', Ethernet5/5)
+                if source is 'show cdp neighbor detail.txt', key is the fullname of the interface
+                'Ethernet8/11': ('XXXXXXX_002', Ethernet5/5)
             }
         Args:
             path: fullpath of cdp file
@@ -112,8 +115,9 @@ def get_cdp_information(path):
         with open(os.path.join(path, 'show cdp neighbor detail.txt'), 'r') as cdp_file:
             content = cdp_file.read()
             informations = re.findall( \
-                r'System Name: (\S+).*?(\d+/\d+), Port ID \(outgoing port\): (\S+)',
+                r'Device ID:\s?(\S+?)\..*?Interface: (\S+),\s+Port ID \(outgoing port\): (\S+)',
                 content, re.S)
+                #r'Device ID:\s?(\S+).*?Interface: (\S+), Port ID \(outgoing port\): (\S+)',
                 #Change the pattern to get only interface number not name.
                 #To keep same between interface fullname and short name  (Ethernet3/37 and Eth3/37)
                 #Errors for this RE:
@@ -137,6 +141,9 @@ def get_cdp_information(path):
     if informations:
         for device_name, local_interface, remote_interface in informations:
             result[local_interface] = (device_name, remote_interface)
+    else:
+        if len(content) > 100:
+            tools.LOGS.add_info('There is information in files. Maybe the pattarn is error!')
     return result
 
 def get_information_from_cdp(interface_name, cdp_information):
@@ -277,7 +284,6 @@ def import_device_interface_from_file(path):
     try:
         folders = os.listdir(path)
     except OSError as _e:
-        print(_e)
         raise _e
 
     for folder in folders:
@@ -285,7 +291,8 @@ def import_device_interface_from_file(path):
         if device:
             device_number += 1
             import_interfaces(device, get_cdp_information(os.path.join(path, folder)))
-            print('Device %s was updated or added successfully'% device.hostname)
+            #tools.LOGS.add_info('Device %s was updated or added successfully'% device.hostname)
+            #tools.LOGS.add_info(get_cdp_information(os.path.join(path, folder)))
     return device_number
 
 def update_cdp_information(path):
@@ -319,13 +326,23 @@ def update_cdp_information(path):
 
 if __name__ == "__main__":
     LOG_ROOT = r'D:\Python\log\result'
-    DEVICE_NUMBER = import_device_interface_from_file(LOG_ROOT)
+    #DEVICE_NUMBER = import_device_interface_from_file(LOG_ROOT)
     #print('%d devices were added or updated' % (DEVICE_NUMBER,))
-
-    
-    TEST_CDP_FILE = r'D:\Python\log\result\11.18.240.11_A-HYA4B-2LA-AS01'
+    #TEST_CDP_FILE = r'D:\Python\log\result\11.18.240.11_A-HYA4B-2LA-AS01'
     #TEST_CDP_FILE = r'D:\Python\log\20181102220753\txt\11.1.1.101_A-HYA2B-ZBA-CS01'
     #print(get_cdp_information(TEST_CDP_FILE))
     #update_cdp_information(LOG_ROOT)
+    LOG_ROOT = r'D:\Python\log\20181102220753\txt'
+    folders = os.listdir(LOG_ROOT)
+    device_name_pattern = re.compile(r'\d+\.\d+\.\d+\.\d+_(\S+)')
+    for folder in folders:
+        _r = device_name_pattern.search(folder)
+        if _r:
+            tools.LOGS.add_info('Device %s was updated or added successfully'% _r.groups(1))
+            tools.LOGS.add_info(get_cdp_information(os.path.join(LOG_ROOT, folder)))
+
     for _error_log in tools.LOGS.error_logs:
         print(_error_log)
+
+    with open('logs.txt', 'w') as f:
+        f.writelines(tools.LOGS.info_logs)
