@@ -129,14 +129,19 @@ def get_cdp_information(path):
         try:
             with open(os.path.join(path, 'show cdp neighbor.txt'), 'r') as cdp_file:
                 content = cdp_file.read()
-                informations = re.findall( \
-                    r'(\S+?)\..*?(\d+/\d+).*?(\S+)\s+\n',
-                    content, re.S)
-                #informations = re.findall( \
-                #    r'(\S+)\..*? +(\S+) +\d+ +\w \w \w +\w+ +(\S+)',
-                #    content, re.S)
         except IOError as _e:
-            tools.LOGS.add_error(_e)
+            try:
+                with open(os.path.join(path, 'show cdp nei.txt'), 'r') as cdp_file:
+                    content = cdp_file.read()
+                #  history versions: r'(\S+?)\..*?\n.*?(\d+/\d+).*?(\S{3}\s?\d+/\d+)\s+\n',
+            except IOError as _e:
+                tools.LOGS.add_error('Can not find neighbor files in folder %s'% path)
+                return result
+
+        informations = re.findall( \
+            r'(\S+?)\.[^\n]*?\n[^\n]*?(\d+/\d+)[^\n]*?(\S{3}\s?\d+/\d+)\s+\n',
+            content, re.S)
+
 
     if informations:
         for device_name, local_interface, remote_interface in informations:
@@ -153,22 +158,24 @@ def get_information_from_cdp(interface_name, cdp_information):
             cdp_information:
                 It is a dict like this
                     {
-                        'local_interface_number': ('peer_device_name', 'peer_interface_name')
+                        'local_interface_name': ('peer_device_name', 'peer_interface_name')
+                        if source is 'show cdp neighbor.txt', key is the number of the interface
                         '8/11': ('XXXXXXX_002', Ethernet5/5)
+                        if source is 'show cdp neighbor detail.txt', key is the fullname
+                        'Ethernet8/11': ('XXXXXXX_002', Ethernet5/5)
                     }
         Returns:
             A tuple include ('peer_device_name', 'peer_interface_name')
     '''
 
-    #TODO here is a bug need to be fixed after change the key to number.
-    _r = re.search(r'\d+/\d+', interface_name)
-    if _r:
-        interface_number = _r.group()
     if cdp_information:
         if interface_name in cdp_information:
-            #Change the key to from number to only interface number (Ethernet3/37 and 3/37)
-            #To aviod error between fullname and short name  (Ethernet3/37 and Eth3/37)
-            return cdp_information[interface_number]
+            return cdp_information[interface_name]
+
+        _r = re.search(r'\d+/\d+', interface_name)
+        if _r:
+            interface_number = _r.group()
+            return cdp_information.get(interface_number, (None, None))
     return (None, None)
 
 def import_interfaces(device, cdp_information=None):
@@ -246,8 +253,6 @@ def import_device_from_folder(folder_name):
     if _running_config is None:
         tools.LOGS.add_error('Can not find configuration file in this folder %s' % folder_name)
         return None
-    
-    #TODO Check if needed to add get name from just folder name
     _device_name = get_device_name(_running_config)
     if _device_name is not None:
         try:
@@ -291,8 +296,7 @@ def import_device_interface_from_file(path):
         if device:
             device_number += 1
             import_interfaces(device, get_cdp_information(os.path.join(path, folder)))
-            #tools.LOGS.add_info('Device %s was updated or added successfully'% device.hostname)
-            #tools.LOGS.add_info(get_cdp_information(os.path.join(path, folder)))
+            tools.LOGS.add_info('Device %s was updated or added successfully'% device.hostname)
     return device_number
 
 def update_cdp_information(path):
@@ -324,22 +328,21 @@ def update_cdp_information(path):
                         Interface.objects.filter(iName__endswith=interface_number)\
                         .update(remote_device_name=remote[0], remote_interface_name=remote[1])
 
+def clear_all_interfaces():
+    '''
+        Top level function
+        Main function for Clear all interfaces information in database
+        Args:
+            NONE
+    '''
+    Interface.objects.all().delete()
+
 if __name__ == "__main__":
-    LOG_ROOT = r'D:\Python\log\result'
-    #DEVICE_NUMBER = import_device_interface_from_file(LOG_ROOT)
-    #print('%d devices were added or updated' % (DEVICE_NUMBER,))
-    #TEST_CDP_FILE = r'D:\Python\log\result\11.18.240.11_A-HYA4B-2LA-AS01'
-    #TEST_CDP_FILE = r'D:\Python\log\20181102220753\txt\11.1.1.101_A-HYA2B-ZBA-CS01'
-    #print(get_cdp_information(TEST_CDP_FILE))
-    #update_cdp_information(LOG_ROOT)
+    #LOG_ROOT = r'D:\Python\log\result'
+
     LOG_ROOT = r'D:\Python\log\20181102220753\txt'
-    folders = os.listdir(LOG_ROOT)
-    device_name_pattern = re.compile(r'\d+\.\d+\.\d+\.\d+_(\S+)')
-    for folder in folders:
-        _r = device_name_pattern.search(folder)
-        if _r:
-            tools.LOGS.add_info('Device %s was updated or added successfully'% _r.groups(1))
-            tools.LOGS.add_info(get_cdp_information(os.path.join(LOG_ROOT, folder)))
+    #clear_all_interfaces()
+    DEVICE_NUMBER = import_device_interface_from_file(LOG_ROOT)
 
     for _error_log in tools.LOGS.error_logs:
         print(_error_log)

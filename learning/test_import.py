@@ -1,12 +1,15 @@
 '''
     Test for function in import devices
 '''
+import os
 import unittest
 import data_import
-import os
+
 
 class TestImportDevice(unittest.TestCase):
-
+    '''
+    Test for import function
+    '''
     def test_import_error(self):
         '''Test only error situation for import device'''
         with self.assertRaises(FileNotFoundError):
@@ -37,10 +40,21 @@ class TestImportDevice(unittest.TestCase):
 
         test_path = r'ut\03detail2'
         expected = {
-            'FastEthernet1':('B-XXX4A-ZZZ-DS01', 'mgmt0')
+            'Ethernet3/21':('B-XXX2B-XXX-CS01', 'Ethernet6/13'),
+            'Ethernet3/25':('B-XXX1A-XXX-AS01', 'Ethernet1/1')
         }
         self.assertEqual(
             expected, data_import.get_cdp_information(os.path.join(debug_prefix, test_path))
+        )
+
+        test_path = r'ut\04Fast_brief'
+        expected = {
+            '3/3':('B-UUU2B-123-DS03', 'Eth 3/28'),
+            '4/3':('B-UUU2B-123-DS03', 'Eth 5/28')
+        }
+        self.assertEqual(
+            expected, data_import.get_cdp_information(os.path.join(debug_prefix, test_path))
+
         )
 if __name__ == '__main__':
     unittest.main()
