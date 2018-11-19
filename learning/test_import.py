@@ -18,6 +18,7 @@ class TestImportDevice(unittest.TestCase):
     def test_read_ldp_information(self):
         '''Test test for read ldp information'''
         debug_prefix = r''
+        
         test_path = r'ut\01normal_brief'
         expected = {
             '6/1':('A-XXXX-ZZZ-CS02', 'Eth6/1'),
@@ -26,7 +27,7 @@ class TestImportDevice(unittest.TestCase):
         self.assertEqual(
             expected, data_import.get_cdp_information(os.path.join(debug_prefix, test_path))
         )
-
+        
         test_path = r'ut\02detail_test'
         expected = {
             'FastEthernet1':('B-XXX4A-ZZZ-DS01', 'mgmt0')
@@ -37,10 +38,22 @@ class TestImportDevice(unittest.TestCase):
 
         test_path = r'ut\03detail2'
         expected = {
-            'FastEthernet1':('B-XXX4A-ZZZ-DS01', 'mgmt0')
+            'Ethernet3/21':('B-XXX2B-XXX-CS01', 'Ethernet6/13'),
+            'Ethernet3/25':('B-XXX1A-XXX-AS01', 'Ethernet1/1')
         }
         self.assertEqual(
             expected, data_import.get_cdp_information(os.path.join(debug_prefix, test_path))
         )
+        
+        test_path = r'ut\04Fast_brief'
+        expected = {
+            '3/3':('B-UUU2B-123-DS03', 'Eth 3/28'),
+            '4/3':('B-UUU2B-123-DS03', 'Eth 5/28')
+        }
+        self.assertEqual(
+            expected, data_import.get_cdp_information(os.path.join(debug_prefix, test_path))
+
+        )
+        
 if __name__ == '__main__':
     unittest.main()
