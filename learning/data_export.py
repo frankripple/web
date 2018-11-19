@@ -100,7 +100,6 @@ if __name__ == "__main__":
     print(LOGS.infos)
     for _error_log in LOGS.error_logs:
         print(_error_log)
-    
     '''
     print(export_interface_ip_to_csv('interface_ip.csv'))
     print(tools.LOGS.errors)

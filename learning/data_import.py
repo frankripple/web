@@ -168,7 +168,6 @@ def get_information_from_cdp(interface_name, cdp_information):
             A tuple include ('peer_device_name', 'peer_interface_name')
     '''
 
-    #TODO here is a bug need to be fixed after change the key to number.
     if cdp_information:
         if interface_name in cdp_information:
             return cdp_information[interface_name]
@@ -177,7 +176,6 @@ def get_information_from_cdp(interface_name, cdp_information):
         if _r:
             interface_number = _r.group()
             return cdp_information.get(interface_number, (None, None))
-        
     return (None, None)
 
 def import_interfaces(device, cdp_information=None):
@@ -255,8 +253,6 @@ def import_device_from_folder(folder_name):
     if _running_config is None:
         tools.LOGS.add_error('Can not find configuration file in this folder %s' % folder_name)
         return None
-    
-    #TODO Check if needed to add get name from just folder name
     _device_name = get_device_name(_running_config)
     if _device_name is not None:
         try:
