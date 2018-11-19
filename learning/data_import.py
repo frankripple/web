@@ -176,7 +176,7 @@ def get_information_from_cdp(interface_name, cdp_information):
         _r = re.search(r'\d+/\d+', interface_name)
         if _r:
             interface_number = _r.group()
-        return cdp_information.get(interface_number, (None, None))
+            return cdp_information.get(interface_number, (None, None))
         
     return (None, None)
 
@@ -300,8 +300,7 @@ def import_device_interface_from_file(path):
         if device:
             device_number += 1
             import_interfaces(device, get_cdp_information(os.path.join(path, folder)))
-            #tools.LOGS.add_info('Device %s was updated or added successfully'% device.hostname)
-            #tools.LOGS.add_info(get_cdp_information(os.path.join(path, folder)))
+            tools.LOGS.add_info('Device %s was updated or added successfully'% device.hostname)
     return device_number
 
 def update_cdp_information(path):
@@ -333,22 +332,21 @@ def update_cdp_information(path):
                         Interface.objects.filter(iName__endswith=interface_number)\
                         .update(remote_device_name=remote[0], remote_interface_name=remote[1])
 
+def clear_all_interfaces():
+    '''
+        Top level function
+        Main function for Clear all interfaces information in database
+        Args:
+            NONE
+    '''
+    Interface.objects.all().delete()
+
 if __name__ == "__main__":
-    LOG_ROOT = r'D:\Python\log\result'
-    #DEVICE_NUMBER = import_device_interface_from_file(LOG_ROOT)
-    #print('%d devices were added or updated' % (DEVICE_NUMBER,))
-    #TEST_CDP_FILE = r'D:\Python\log\result\11.18.240.11_A-HYA4B-2LA-AS01'
-    #TEST_CDP_FILE = r'D:\Python\log\20181102220753\txt\11.1.1.101_A-HYA2B-ZBA-CS01'
-    #print(get_cdp_information(TEST_CDP_FILE))
-    #update_cdp_information(LOG_ROOT)
-    #LOG_ROOT = r'D:\Python\log\20181102220753\txt'
-    folders = os.listdir(LOG_ROOT)
-    device_name_pattern = re.compile(r'\d+\.\d+\.\d+\.\d+_(\S+)')
-    for folder in folders:
-        _r = device_name_pattern.search(folder)
-        if _r:
-            tools.LOGS.add_info('Device %s was updated or added successfully'% _r.groups(1))
-            tools.LOGS.add_info(get_cdp_information(os.path.join(LOG_ROOT, folder)))
+    #LOG_ROOT = r'D:\Python\log\result'
+
+    LOG_ROOT = r'D:\Python\log\20181102220753\txt'
+    #clear_all_interfaces()
+    DEVICE_NUMBER = import_device_interface_from_file(LOG_ROOT)
 
     for _error_log in tools.LOGS.error_logs:
         print(_error_log)
